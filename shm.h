@@ -7,14 +7,15 @@
 
 #define SHM_SIZE (sizeof(struct exchange_t))
 
-#define NO_WORKER 4
+#define NO_WORKER 8
 #define INIT_DATA 123456
 
 struct exchange_t
 {
 	int is_initialized;
-	int worker_requested;
-	int worker_available;
+	//~ int worker_requested;
+	//~ int worker_available;
+	int worker_running;
 	char cmdline[1024];
 };
 
@@ -33,6 +34,9 @@ public:
 
 	void wait(void);
 	void put(void);
+	void join(void);
+
+	string get_filename();
 
 	struct exchange_t* data;
 

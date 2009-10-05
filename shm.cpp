@@ -5,9 +5,10 @@
 
 Shm::Shm()
 {
-	string filename;
-	filename = "/tmp/worker.";
-	filename+=getenv("USERNAME");
+	string filename=get_filename();
+	string cmd=string("touch ");
+	cmd+=get_filename();
+	system (cmd.c_str());
 	lock();
 	// Key erstellen
 	if ((key = ftok(filename.c_str(), 'R')) == -1) 
@@ -29,8 +30,10 @@ void Shm::init()
 			perror("semctl");
 		if (semctl(semid, 1, SETVAL, NO_WORKER) == -1) 
 			perror("semctl");
+		data->worker_running=0;
 		data->is_initialized=INIT_DATA;
 		cout << "shmid " << shmid << " semid " << semid << endl;
+		cout << "Number of Workers " << NO_WORKER << endl;
 	}
 	unlock();
 
@@ -70,10 +73,33 @@ void Shm::wait()
 {
 	struct sembuf s_shm_lock = {1, -1, 0};
 	semop(semid, &s_shm_lock, 1);
+	lock();
+	data->worker_running++;
+	unlock();
 }
 void Shm::put()
 {
+	lock();
+	data->worker_running--;
+	unlock();
 	struct sembuf s_shm_unlock = {1, 1, 0};
 	semop(semid, &s_shm_unlock, 1);
 }
 
+string Shm::get_filename() {
+	string f= "/tmp/worker.";
+	f+=getenv("USERNAME");
+	return f;
+}
+
+
+void Shm::join() {
+	bool end=false;
+	while (!end) {
+		lock();
+		if (data->worker_running==0)
+			end=true;
+		unlock();
+		sleep(1);
+	}
+}
