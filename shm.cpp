@@ -100,6 +100,7 @@ void Shm::join() {
 		if (data->worker_running==0)
 			end=true;
 		unlock();
-		sleep(1);
+		if (!end)
+			sleep(1);
 	}
 }
