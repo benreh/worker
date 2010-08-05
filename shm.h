@@ -6,27 +6,26 @@
 #include <sys/sem.h>
 
 #define SHM_SIZE (sizeof(struct exchange_t))
-
+//Still hardcoded, will change in the hopefully future
 #define NO_WORKER 8
+//Some Magic-bytes
 #define INIT_DATA 123456
 
-struct exchange_t
-{
+//struct that contains the data in the shared mem
+struct exchange_t {
 	int is_initialized;
-	//~ int worker_requested;
-	//~ int worker_available;
 	int worker_running;
 	char cmdline[1024];
 };
 
 
 
-
-class Shm 
-{
+//Class for handling shm and semaphore actions
+class Shm {
 public:
 	Shm(void);
 	~Shm(void);
+	
 	void init(void);
 	void lock(void);
 	void unlock(void);
