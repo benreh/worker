@@ -15,22 +15,35 @@
 #    You should have received a copy of the GNU General Public License
 #    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 
+# This small script demonstrates the use of worker
+# It is used in a directory with jpgs.
+# First they are rotated with 'exifautotran' and then resized
+# with imagick's convert in a seperate directory
 
-export THUMBDIR=small
+# Name of the thumbnail directory
+THUMBDIR=small
+FILES="$(ls *.jpg *.JPG 2>/dev/null)"
+QUALITY="-quality 70 -resize  15%x15%"
+
 mkdir -p $THUMBDIR
-export FILES="$(ls *.jpg *.JPG 2>/dev/null)"
+#Round 1: rotate
 for i in $FILES
 do 
 	worker exifautotran $i 
 done
+#wait for all workers to finisch (barrier)
 worker --join
+
+#Round 1: convert
 for i in $FILES
 do
 	TO=$THUMBDIR/$i
+	#only convert, if newer than target
 	if [ "$i" -nt "$TO" ] || [ ! -f "$TO" ] 
 	then
 		echo $i
-		worker convert -quality 70 -resize  15%x15% $i $TO
+		worker convert $QUALITY $i $TO
 	fi
 done
+#wait again
 worker --join
