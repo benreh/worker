@@ -15,6 +15,36 @@
     along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 
 
+Example usage
+=============
+
+Let's take a look at the following shell code snippet:
+
+#!/bin/bash
+for i in 1 2 3 4 5
+do
+	sleep 1;
+done
+
+normally it takes 5 seconds for this loop to run.
+
+If we add the 'worker' by changing it to 
+
+#!/bin/bash
+for i in 1 2 3 4 5
+do
+	worker sleep 1;
+done
+
+on a machine that has for example two processors/cores, the loop
+takes 2 seconds to finish. First 1 and 2 run simultaneously, then 3
+and 4. The loop exits while job 5 is still running.
+
+In some cases this is an unwanted side-effect and you want to wait for
+all jobs to have finished. In that case you can add a 'worker --join'
+at the end. The whole code now takes 3 seconds to run.
+
+ATTENTION:
 This program is in a very experimental stage.
 That means it worked on two of my computers.
 
