@@ -4,11 +4,24 @@
 
 
 Shm::Shm() {
-	//this is a really bad hack...
+	//default: one worker
+	no_workers=1;
 	string filename=get_filename();
+	//create a file, if it does not already exist
+	struct stat stFileInfo; 
+	int intStat;
+	intStat = stat(filename.c_str(),&stFileInfo);
+	if (intStat!=0) {
+		ofstream file;
+		file.open(filename.c_str());
+		file.close();
+	}
+	//this was a really bad hack...
+	/*
 	string cmd=string("touch ");
 	cmd+=get_filename();
-	system (cmd.c_str());
+	system (cmd.c_str());*/
+	
 	lock();
 	// Kcreate ey
 	if ((key = ftok(filename.c_str(), 'R')) == -1) 
@@ -23,18 +36,32 @@ Shm::Shm() {
 }
 void Shm::init() {
 	//if not initialized
-	if (data->is_initialized!=INIT_DATA)
-	{
+	if (data->is_initialized!=INIT_DATA){
+		//Trying to determine the number of workers
+		ifstream cpuinfo;
+		cpuinfo.open("/proc/cpuinfo");
+		if (cpuinfo) {
+			no_workers=0;
+			cout << "reading from \"/proc/cpuinfo\"" << endl;
+			while (!cpuinfo.eof()) {
+				string info;
+				cpuinfo >> info;
+				//~ cout << info << endl;
+				if (info == "processor")
+					no_workers++;
+			}
+			cpuinfo.close();
+		}
 		// initialize
 		if (semctl(semid, 0, SETVAL, 1) == -1) 
 			perror("semctl");
-		if (semctl(semid, 1, SETVAL, NO_WORKER) == -1) 
+		if (semctl(semid, 1, SETVAL, no_workers) == -1) 
 			perror("semctl");
 		data->worker_running=0;
 		data->is_initialized=INIT_DATA;
 		//some debugging stuff
 		cout << "shmid " << shmid << " semid " << semid << endl;
-		cout << "Number of Workers " << NO_WORKER << endl;
+		cout << "Number of Workers " << no_workers << endl;
 	}
 	unlock();
 

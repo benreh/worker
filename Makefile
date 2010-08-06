@@ -19,5 +19,6 @@ clean:
 	rm -rf $(MYOBJECTS) $(MY_NAME) dep/
 install:
 	install $(MY_NAME) ~/bin/
+	install mkthumb.sh ~/bin/
 
 -include $(shell mkdir dep 2>/dev/null) $(wildcard dep/*)

@@ -4,10 +4,12 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/sem.h>
+#include <sys/stat.h>
+#include <fstream>
 
 #define SHM_SIZE (sizeof(struct exchange_t))
 //Still hardcoded, will change in the hopefully future
-#define NO_WORKER 8
+//~ #define NO_WORKER 8
 //Some Magic-bytes
 #define INIT_DATA 123456
 
@@ -15,7 +17,7 @@
 struct exchange_t {
 	int is_initialized;
 	int worker_running;
-	char cmdline[1024];
+	//~ char cmdline[1024];
 };
 
 
@@ -44,6 +46,7 @@ private:
 	key_t key;
 	int shmid;
 	int semid;
+	int no_workers;
 
 
 };
