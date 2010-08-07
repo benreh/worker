@@ -6,13 +6,13 @@
 #    it under the terms of the GNU General Public License as published by
 #    the Free Software Foundation version 3 of the License.
 #
-#    'Worker is distributed in the hope that it will be useful,
+#    'Worker' is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+#    along with 'Worker'.  If not, see <http://www.gnu.org/licenses/>.
 
 CC          = g++
 CCFLAGS     = -c -Wall -O0 -Funrollloop  -D_GNU_SOURCE=1 -D_REENTRANT 
