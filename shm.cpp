@@ -131,7 +131,7 @@ void Shm::put()
 //retrieve unique filename
 string Shm::get_filename() {
 	string f= "/tmp/worker.";
-	f+=getenv("USERNAME");
+	f+=getenv("USER");
 	return f;
 }
 
