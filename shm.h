@@ -44,7 +44,7 @@ public:
 	Shm(void);
 	~Shm(void);
 	
-	void init(void);
+	void init(int set_no_workers=0);
 	void lock(void);
 	void unlock(void);
 	void destroy(void);
@@ -52,6 +52,7 @@ public:
 	void wait(void);
 	void put(void);
 	void join(void);
+	bool isvalid();
 
 	string get_filename();
 

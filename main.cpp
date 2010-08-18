@@ -34,6 +34,14 @@ int main(int argc, char *argv[]) {
 		shm.destroy();	
 		exit(0);	
 	}
+	if (argc>2 && (((((string) argv[1]) == "--number")) || (((string) argv[1]) == "-n"))) {
+		int n=atoi(argv[2]);
+		cout << "number of workers " << n << endl;
+		if (shm.isvalid())
+			shm.destroy();
+		shm.init(n);
+		exit(0);	
+	}
 	//initializing shm
 	shm.init();
 	//Special case, waiting for all processes to have finished.

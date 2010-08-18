@@ -48,13 +48,13 @@ Shm::Shm() {
 	if ((semid = semget(key, 5, 0666 | IPC_CREAT)) == -1) 
 		perror("semget");
 }
-void Shm::init() {
+void Shm::init(int set_no_workers) {
 	//if not initialized
-	if (data->is_initialized!=INIT_DATA){
+	if (!(isvalid())){
 		//Trying to determine the number of workers
 		ifstream cpuinfo;
 		cpuinfo.open("/proc/cpuinfo");
-		if (cpuinfo) {
+		if (cpuinfo && set_no_workers==0) {
 			no_workers=0;
 			cout << "reading from \"/proc/cpuinfo\"" << endl;
 			while (!cpuinfo.eof()) {
@@ -65,6 +65,8 @@ void Shm::init() {
 					no_workers++;
 			}
 			cpuinfo.close();
+		} else if (set_no_workers!=0) {
+			no_workers=set_no_workers;
 		}
 		// initialize
 		if (semctl(semid, 0, SETVAL, 1) == -1) 
@@ -87,15 +89,18 @@ Shm::~Shm() {
 
 
 void Shm::destroy(void) {
-	// delete semaphores
-	if (semctl(semid, 0, IPC_RMID, NULL) == -1) 
-		perror("semctl");
-	if (semctl(semid, 1, IPC_RMID, NULL) == -1) 
-		perror("semctl");
-	//delete shm 
-	if (shmctl(shmid, IPC_RMID, NULL)==-1)
-		perror("shmctl");
-	data->is_initialized=0;
+	if (isvalid()) {
+		data->is_initialized=0;
+		// delete semaphores
+		if (semctl(semid, 0, IPC_RMID, NULL) == -1) 
+			perror("semctl");
+		if (semctl(semid, 1, IPC_RMID, NULL) == -1) 
+			perror("semctl");
+		//delete shm 
+		if (shmctl(shmid, IPC_RMID, NULL)==-1)
+			perror("shmctl");
+		data->is_initialized=0;
+	}
 }
 
 //Lock shm for exclusive access
@@ -148,4 +153,7 @@ void Shm::join() {
 			sleep(1);
 		}
 	}
+}
+bool Shm::isvalid() {
+	return  data->is_initialized==INIT_DATA ? true: false;
 }
