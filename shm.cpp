@@ -92,8 +92,6 @@ void Shm::destroy(void) {
 	if (isvalid()) {
 		data->is_initialized=0;
 		// delete semaphores
-		if (semctl(semid, 0, IPC_RMID, NULL) == -1) 
-			perror("semctl");
 		if (semctl(semid, 1, IPC_RMID, NULL) == -1) 
 			perror("semctl");
 		//delete shm 
