@@ -21,6 +21,15 @@
 
 int main(int argc, char *argv[]) {
 	//cmdline is the string, that will be executed later
+	if ((argc>1 && ((string) argv[1]) == "--help")){
+		cout << "Worker: running processes parallel from a shell\n";
+		cout << "Usage: worker COMMAND PARAMETER1 PARAMETER2 ...\nor\n";
+		cout << "worker --remove\tremoves the shared memmory and semaphores\n";
+		cout << "worker --number\tsets the number of workers\n";
+		cout << "worker --join\twaits for the last worker to habe finished"<<endl;
+		exit(0);
+	}
+
 	string cmdline;
 	for(int i=1; i < argc; i++) {
 		cmdline+=argv[i];
