@@ -34,7 +34,7 @@ done
 #wait for all workers to finisch (barrier)
 worker --join
 
-#Round 1: convert
+#Round 2: convert
 for i in $FILES
 do
 	TO=$THUMBDIR/$i
