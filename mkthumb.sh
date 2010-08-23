@@ -25,15 +25,24 @@ THUMBDIR=small
 FILES="$(ls *.jpg *.JPG 2>/dev/null)"
 QUALITY="-quality 70 -resize  15%x15%"
 
+WORKER=$(which worker)
+
+if [ "$WORKER" = "" ]
+then
+	echo WARNING: worker not found, running NOT parallel
+fi
+
 mkdir -p $THUMBDIR
 #Round 1: rotate
 for i in $FILES
 do 
-	worker exifautotran $i 
+	$WORKER exifautotran $i 
 done
 #wait for all workers to finisch (barrier)
-worker --join
-
+if [ "$WORKER" != "" ]
+then 
+	$WORKER --join
+fi
 #Round 2: convert
 for i in $FILES
 do
@@ -42,8 +51,11 @@ do
 	if [ "$i" -nt "$TO" ] || [ ! -f "$TO" ] 
 	then
 		echo $i
-		worker convert $QUALITY $i $TO
+		$WORKER convert $QUALITY $i $TO
 	fi
 done
 #wait again
-worker --join
+if [ "$WORKER" != "" ]
+then
+	$WORKER --join
+fi
